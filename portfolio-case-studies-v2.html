@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Tech Product Study</title>
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+        <!-- Feather Icons CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.css">
+
+        <!-- Custom CSS -->
+        <style>
+            /* Add your custom styles here */
+            .staggered-div {
+                margin-bottom: 20px;
+                position: relative;
+                overflow: hidden;
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .staggered-div img {
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+            }
+
+            .staggered-div .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-size: 24px;
+                text-align: center;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            .staggered-div:hover .overlay {
+                opacity: 1;
+            }
+
+            /* Sectioned divs */
+            .section {
+                width: 100%;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+
+            .section .staggered-div {
+                width: calc(33.33% - 20px);
+            }
+
+            @media (max-width: 768px) {
+                .section .staggered-div {
+                    width: 100%;
+                }
+            }
+        </style>
+        
+    </head>
+
+    <body>
+        <!-- BEGIN: ed8c6549bwf9 -->
+        <!-- Nav Container -->
+        <div class="container">
+            <nav class="site-nav">
+                <div class="logo">
+                    <a href="index.html" class="text-white">Dovetec Enterprises<span class="text-black">.</span></a>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-12 col-sm-12 col-lg-12 site-navigation text-center">
+                        <ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu">
+                            <!-- Home -->
+                            <li class="active"><a href="index.html">Home</a></li>
+                            <!-- About -->
+                            <li class="has-children">
+                                <a href="about.html">Pages</a>
+                                <ul class="dropdown">
+                                    <li><a href="portfolio.html">Portfolio</a></li>
+                                    <li><a href="single.html">Blog</a></li>
+                                    <li><a href="about.html">About</a></li>
+                                    <li><a href="contact.html">Contact</a></li>
+                                    <!-- <li class="has-children">
+                      <a href="#">Menu Two</a>
+                      <ul class="dropdown">
+                        <li><a href="#">Sub Menu One</a></li>
+                        <li><a href="#">Sub Menu Two</a></li>
+                        <li><a href="#">Sub Menu Three</a></li>
+                      </ul>
+                    </li> -->
+                                    <li><a href="#">Menu Three</a></li>
+                                </ul>
+                            </li>
+                            <!-- Portfolio -->
+                            <li class="has-children">
+                                <a href="#">Portfolio</a>
+                                <div class='row g-xl-3'>
+
+                                </div>
+                                <ul class="dropdown d-flex d-none pr-2 list-unstyled">
+                                    <!-- Nav item img list 1 -->
+                                    <li>
+                                        <a href="portfolio.html">
+                                            <img src="images/hero-min.jpg" alt="Portfolio Item 1" class="dropdown-img">
+                                            <h6>Ceremony Worthy of Time</h6>
+                                            <p>We help our customers better manage their web presence.</p>
+                                            <a href="portfolio-case-studies-v1.html" class="learn-more">Learn more<i
+                                                    class="bi bi-arrow-right"></i></a>
+                                        </a>
+                                    </li>
+                                    <!-- Nav item img list 2 -->
+                                    <li>
+                                        <a href="single.html">
+                                            <img src="images/macbookmock.jpg" alt="Portfolio Item 2"
+                                                class="dropdown-img">
+                                            <h6>Brushstrokes and Beyond</h6>
+                                            <p>We help our customers better manage their web presence.</p>
+                                            <a href="portfolio-case-studies-v2.html" class="learn-more">Learn more<i
+                                                    class="bi bi-arrow-right"></i></a>
+                                        </a>
+                                    </li>
+                                    <!-- Nav item list 3 -->
+                                    <div class="col-xl-4">
+                                        <ul class="list-unstyled">
+                                            <li class="dropdown-header h6">Portfolio Pages</li>
+                                            <li> <a class="dropdown-item" href="portfolio-masonry.html">Portfolio
+                                                    Masonry</a> </li>
+                                            <li> <a class="dropdown-item" href="portfolio-showcase.html">Portfolio
+                                                    Showcase</a> </li>
+                                            <li> <a class="dropdown-item" href="portfolio-list.html">Portfolio List</a>
+                                            </li>
+                                            <li> <a class="dropdown-item"
+                                                    href="portfolio-case-studies-v1.html">Portfolio Case Study v.1</a>
+                                            </li>
+                                            <li> <a class="dropdown-item"
+                                                    href="portfolio-case-studies-v2.html">Portfolio Case Study v.2</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+
+                                </ul>
+                            </li>
+                            <!-- Gallery -->
+                            <li><a href="elements.html">Gallery</a></li>
+                            <!-- Contact -->
+                            <li><a href="contact.html">Contact us</a></li>
+                        </ul>
+                        <ul class="js-clone-nav d-none d-lg-inline-block text-left site-menu float-right menu-absolute">
+                            <li><a href="login.html">Join Us!</a></li>
+                            <li class="cta-button"><a href="https://dovetecenterprises.tech/" target="_blank">Product
+                                    Demo</a></li>
+                        </ul>
+                        <a href="#" class="burger light ml-auto site-menu-toggle js-menu-toggle d-block d-lg-none"
+                            data-toggle="collapse" data-target="#main-navbar">
+                            <span></span>
+                        </a>
+                    </div>
+                </div>
+            </nav> <!-- END nav -->
+        </div>
+        <!-- END container -->
+        <h1
+            style="background: linear-gradient(145deg, rgb(4, 86, 61), rgba(255, 255, 255, 0.2)), radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.2)); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; padding: 20px; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; color: #ffffff; text-shadow: 0px 4px 3px rgba(0, 0, 0, 0.4); text-align: center;">
+            Tech Product Study</h1>
+        <!-- END: ed8c6549bwf9 -->
+        <div class="section">
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 1">
+                <div class="overlay">
+                    <p>Brand: Tech</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 2">
+                <div class="overlay">
+                    <p>Colors: [Add colors here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 3">
+                <div class="overlay">
+                    <p>Design: [Add design details here]</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 4">
+                <div class="overlay">
+                    <p>Website: [Add website details here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 5">
+                <div class="overlay">
+                    <p>Product Details: [Add product details here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 6">
+                <div class="overlay">
+                    <p>Developers: [Add developer details here]</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 7">
+                <div class="overlay">
+                    <p>Editor: [Add editor details here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 8">
+                <div class="overlay">
+                    <p>Intuited Team: [Add team details here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 9">
+                <div class="overlay">
+                    <p>Problem Statement: [Add problem statement here]</p>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 10">
+                <div class="overlay">
+                    <p>Solution Statement: [Add solution statement here]</p>
+                </div>
+            </div>
+            <div class="staggered-div">
+                <img src="images/img_h_3-min.jpg" alt="Image 11">
+                <div class="overlay">
+                    <p>Value Proposition: [Add value proposition statement here]</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+        <!-- Feather Icons JS -->
+        <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+
+        <!-- Custom JS -->
+        <script>
+            // Add your custom JavaScript here
+        </script>
+    </body>
+
+</html>
