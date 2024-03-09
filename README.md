@@ -1,5 +1,4 @@
-
-![Dovetec Enterprises Logo](images/logo-color.png)
+![Screenshot_2024-03-09_18_19_51](https://github.com/Doveteced/doveteced.github.io/assets/70941806/c7dbbe82-32b0-48db-baf2-6ac076495181)
 # [Dovetec Enterprises](dovetec.github.io)
 
 Dovetec Enterprises is a Software Engineering and IT Firm based in Nairobi City. We specialize in solving workforce complexities.
