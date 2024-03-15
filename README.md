@@ -40,4 +40,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 
 
-![Dovetec Enterprises Logo](images/logo-no-background.png)
+![Dovetec Enterprises Logo](static/images/logo-no-background.png)
