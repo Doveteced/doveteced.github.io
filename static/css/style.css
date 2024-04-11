@@ -138,6 +138,10 @@ body .loader .spinner-border:after {
   color: #2b5f57;
 }
 
+.control__indicator:hover{
+  background-color: #2b5f57 !important;
+}
+
 
 .feature-item .icon i {
   font-size: 36px;
