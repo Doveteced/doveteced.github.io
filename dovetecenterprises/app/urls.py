@@ -1,6 +1,9 @@
 import os
+from re import DEBUG
 from django.urls import path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 # create url patterns for the main app
 urlpatterns = [
@@ -17,4 +20,6 @@ urlpatterns = [
     path('gallery/', views.gallery, name=' Our Rich Gallery'),
     path('products/', views.products, name=' Our Products'),
 ]
-
+if DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

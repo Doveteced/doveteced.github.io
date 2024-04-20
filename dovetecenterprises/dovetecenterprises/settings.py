@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'dovetecenterprises.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dovetecenterprises',
+        'NAME': 'techdarasa',
         'USER': 'postgres',
         'PASSWORD': 'pa55word',
         'HOST': 'localhost',  # Or an IP Address that your DB is hosted on

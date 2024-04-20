@@ -100,7 +100,7 @@ body .loader .spinner-border:after {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(23, 57, 3, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,14 +113,6 @@ body .loader .spinner-border:after {
 
 .staggered-div:hover .overlay {
   opacity: 1;
-}
-
-/* Sectioned divs */
-.section {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
 }
 
 .section.staggered-div {
