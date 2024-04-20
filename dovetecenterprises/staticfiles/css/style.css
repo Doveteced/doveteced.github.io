@@ -1966,7 +1966,11 @@ video {
 
 .video-promo {
   position: relative;
+<<<<<<<< HEAD:dovetecenterprises/static/css/style.css
   background: url({% static 'images/bg-video.jpg' %});
+========
+  background: url(/static/images/bg-video.jpg);
+>>>>>>>> 704802aa769d7795d92f7ede681c49911469257f:static/css/style.css
   padding: 60px;
   margin-top: 10px;
   margin-bottom: 10px;
