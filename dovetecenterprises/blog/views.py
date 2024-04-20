@@ -11,11 +11,22 @@ def blog_list(request):
     return render(request, 'blog_list.html', {'blogs': blogs})
 
 
-def blog_detail(request, blog_id):
-    blog = get_object_or_404(Blog, id=blog_id)
-    replies = Reply.objects.filter(blog=blog)
-    return render(request, 'blog_detail.html', {'blog': blog, 'replies': replies})
+# def blog_detail(request, blog_id):
+    # blog = get_object_or_404(Blog, id=blog_id)
+    # replies = Reply.objects.filter(blog=blog)
+    # return render(request, 'blog_detail.html', {'blog': blog, 'replies': replies}, blog_id= blog_id)
 
+def blog_detail(request):
+    page_title= "Sneak Peak through TechDarasa LMS"
+    return render(request, 'blog/blog_detail.html', {'page_title': page_title})
+
+
+"""
+# Portfolio Massionary
+def portfolio_massionry(request):
+    page_title = 'Portfolio Massionry | Dovetec Enterprises'
+    return render(request, 'app/portfolio-masonry.html', {'page_title': page_title})
+"""
 
 def create_reply(request, blog_id):
     if request.method == 'POST':
@@ -68,7 +79,7 @@ def edit_blog(request, blog_id):
         return render(request, 'edit_blog.html', {'blog': blog})
 
 def post_detail(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(Blog, pk=pk)
     return render(request, 'post_detail.html', {'post': post})
 
 def post_new(request):
@@ -80,7 +91,7 @@ def post_new(request):
         pass
 
 def post_edit(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(Blog, pk=pk)
     if request.method == 'POST':
         # Handle form submission
         pass
@@ -89,12 +100,12 @@ def post_edit(request, pk):
         pass
 
 def post_delete(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(Blog, pk=pk)
     # Delete the post
     pass
 
 def add_comment_to_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
+    post = get_object_or_404(Blog, pk=pk)
     if request.method == 'POST':
         # Handle form submission
         pass
@@ -103,11 +114,11 @@ def add_comment_to_post(request, pk):
         pass
 
 def comment_approve(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
+    comment = get_object_or_404(create_reply, pk=pk)
     # Approve the comment
     pass
 
 def comment_remove(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
+    comment = get_object_or_404(delete_reply, pk=pk)
     # Remove the comment
     pass
