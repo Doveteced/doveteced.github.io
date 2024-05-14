@@ -24,7 +24,7 @@ Welcome to the Dovetec Enterprises README! In this document, you will find infor
 
 ## Installation
 
-To use our services, you don't need to install anything. Simply visit our website at [www.dovetecenterprises.com](https://www.dovetecenterprises.com) to get started.
+To use our services, you don't need to install anything. Simply visit our website at [www.dovetecenterprises.tech](https://www.dovetecenterprises.tech) to get started.
 
 ## Usage
 
