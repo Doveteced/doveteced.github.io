@@ -1,4 +1,5 @@
 from django.utils.text import slugify
+from django.shortcuts import redirect
 
 import string
 import random
@@ -12,9 +13,9 @@ def generate_random_string(N):
 
 def generate_slug(text):
     new_slug = slugify(text)
-    from home.models import BlogModel
+    from home.models import Article
 
-    if BlogModel.objects.filter(slug=new_slug).first():
+    if Article.objects.filter(slug=new_slug).first():
         return generate_slug(text + generate_random_string(5))
     return new_slug
 
@@ -30,3 +31,8 @@ def send_mail_to_user(token, email):
     recipient_list = [email]
     send_mail(subject, message, email_from, recipient_list)
     return True
+
+def set_language(request):
+    lang = request.GET.get('lang')
+    request.session['lang'] = lang
+    return redirect(request.META.get('HTTP_REFERER'))
