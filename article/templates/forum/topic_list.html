@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Create a Post{% endblock %}
+
+{% block content %}
+<h1>Create a Post in {{ topic.title }}</h1>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<a href="{% url 'topic_detail' topic.id %}" class="btn btn-link">Cancel</a>
+{% endblock %}

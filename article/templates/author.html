@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile of {{ author.get_full_name }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .author-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .bio {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .social-icons a {
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <header class="navigation fixed-top">
+        <div class="container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <a class="navbar-brand order-1 font-weight-bolder text-uppercase" href="{% url 'home' %}">Dovetec Enterprises</a>
+                <button class="navbar-toggler border-0 order-1" type="button" data-toggle="collapse" data-target="#navigation">
+                    <i class="ti-menu"></i>
+                </button>
+                <div class="collapse navbar-collapse text-center order-lg-2 order-3" id="navigation">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Homepage</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">About <i class="ti-angle-down ml-1"></i></a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{% url 'about_us' %}">About Us</a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">Contact</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Pages <i class="ti-angle-down ml-1"></i></a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="{% url 'author' %}">Author</a>
+                                <a class="dropdown-item" href="{% url 'tags' %}">Tags</a>
+                            </div>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="{% url 'shop' %}">Shop</a></li>
+                    </ul>
+                    <ul class="navbar-nav ml-auto">
+                        {% if request.user.is_authenticated %}
+                        <li class="nav-item"><a class="btn btn-info" href="{% url 'add_blog' %}">Add Blogs</a></li>
+                        <li class="nav-item"><a class="btn btn-danger" href="{% url 'logout_view' %}">Logout</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="btn btn-primary" href="{% url 'login_view' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container mt-5 pt-5">
+        <h1 class="text-center mb-4">Author Profile: {{ author.get_full_name }}</h1>
+
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <!-- Author Image -->
+                <img src="{% if author.profile.image %}{{ author.profile.image.url }}{% else %}/static/default-profile.png{% endif %}" class="author-image" alt="{{ author.get_full_name }}">
+                <h3 class="mt-3">{{ author.get_full_name }}</h3>
+                <p>{{ author.email }}</p>
+            </div>
+
+            <div class="col-md-8">
+                <h4 class="section-title">About the Author</h4>
+                <p class="bio">{{ author.profile.bio|default:"No bio available." }}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h4 class="section-title">Articles by {{ author.get_full_name }}</h4>
+                <div class="list-group mb-4">
+                    {% for article in articles_by_author %}
+                        <a href="{% url 'article_detail' article.slug %}" class="list-group-item list-group-item-action">
+                            {{ article.title }}
+                        </a>
+                    {% empty %}
+                        <div class="list-group-item">No articles found.</div>
+                    {% endfor %}
+                </div>
+
+                <h4 class="section-title">Related Articles</h4>
+                <div class="list-group mb-4">
+                    {% for article in related_articles %}
+                        <a href="{% url 'article_detail' article.slug %}" class="list-group-item list-group-item-action">
+                            {{ article.title }}
+                        </a>
+                    {% empty %}
+                        <div class="list-group-item">No related articles found.</div>
+                    {% endfor %}
+                </div>
+
+                <h4 class="section-title">Tags</h4>
+                <div class="list-group">
+                    {% for tag in author_tags %}
+                        <a href="{% url 'tag_detail' tag.name %}" class="list-group-item list-group-item-action">
+                            {{ tag.name }}
+                        </a>
+                    {% empty %}
+                        <div class="list-group-item">No tags found.</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

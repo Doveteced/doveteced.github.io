@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ post.title }}</h1>
+<p><strong>{{ post.author.username }}</strong> - {{ post.created_at }}</p>
+<p>{{ post.content }}</p>
+
+<div class="mb-3">
+    <a href="{% url 'toggle_like' post.id %}" class="btn btn-success">
+        <i class="fas fa-thumbs-up"></i> Like ({{ post.like_count }})
+    </a>
+    <a href="{% url 'toggle_dislike' post.id %}" class="btn btn-danger">
+        <i class="fas fa-thumbs-down"></i> Dislike ({{ post.dislike_count }})
+    </a>
+</div>
+
+<h2>Comments</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit" class="btn btn-primary">Add Comment</button>
+</form>
+
+<div class="list-group mt-3">
+    {% for comment in comments %}
+        <div class="list-group-item">
+            <h5>{{ comment.author.username }} - {{ comment.created_at }}</h5>
+            <p>{{ comment.content }}</p>
+            <a href="{% url 'reply_detail' comment.id %}" class="btn btn-link">Reply</a>
+            <div class="list-group mt-2">
+                {% for reply in comment.replies.all %}
+                    <div class="list-group-item">
+                        <h6>{{ reply.author.username }} - {{ reply.created_at }}</h6>
+                        <p>{{ reply.content }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
