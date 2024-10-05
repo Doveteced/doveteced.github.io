@@ -1,93 +1,188 @@
 {% extends "base.html" %}
 
 {% block start %}
-<section>
-    <div class="container">
-        <div class="row text-center">
-            <div class="col-xl-10 mx-auto">
-                <img class="img-fluid mb-5" src="/media/{{ blog_obj.image }}" alt="{{ blog_obj.title }}">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xl-8 col-lg-10 mx-auto">
-                <div class="text-content">
-                    {{ blog_obj.content|safe }}
-                </div>
-            </div>
-        </div>
+<style>
+    .bg-image {
+        position: relative;
+        z-index: 1;
+    }
 
-        <!-- Comments Section -->
-        <div class="mt-5">
-            <h6 class="text-uppercase text-muted mb-4">{{ comments.count }} comments</h6>
+    .article-content {
+        position: relative;
+        z-index: 2;
+        margin-top: -50px;
+        /* Adjust as necessary */
+    }
+</style>
+<!-- Blog Header/Banner Section -->
+<section class="vw-100">
+    <div class="container-fluid article-content pt-5 h-100">
+        <div class="bg-image text-center shadow rounded mb-5 h-100"
+            style="background-image: url('/media/{{ article_obj.image }}');">
+            <div class="d-flex justify-content-center align-items-center h-100 text-white">
+                <div>
+                    <h2 class="display-4">{{ article_obj.title }}</h2>
+                    <!-- Article Author Image -->
+                    <div class="container-fluid mb-2">
+                        <img class="img-fluid rounded-circle shadow border border-white"
+                            src="{% if article_obj.author.avatar %}{{ article_obj.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
+                            alt="{{ article_obj.author.name }}" style="width: 50px; height: 50px;">
+                    </div>
+                    <p class="mb-1">By {{ article_obj.author }}</p>
+                    <p class="mb-1">{{ article_obj.category }}</p>
 
-            {% for comment in comments %}
-                <div class="media mb-4">
-                    <img class="avatar avatar-lg mr-4" src="{{ comment.user.avatar_url }}" alt="{{ comment.user.name }}">
-                    <div class="media-body">
-                        <h5>{{ comment.user.name }}</h5>
-                        <p class="text-uppercase text-sm text-muted"><i class="far fa-clock"></i> {{ comment.created_at|date:"F j, Y, g:i a" }}</p>
-                        <p class="text-muted">{{ comment.text }}</p>
-                        <p><a class="btn btn-link text-primary" href="#" data-toggle="collapse" data-target="#reply-{{ comment.id }}" aria-expanded="false" aria-controls="reply-{{ comment.id }}"><i class="fa fa-reply"></i> Reply</a></p>
-
-                        <!-- Replies -->
-                        <div class="collapse" id="reply-{{ comment.id }}">
-                            <form class="form mt-2" method="post" action="{% url 'reply_to_comment' comment.id %}">
-                                {% csrf_token %}
-                                <div class="form-group mb-4">
-                                    <textarea class="form-control" name="reply_text" rows="2" placeholder="Write your reply..."></textarea>
-                                </div>
-                                <button class="btn btn-primary" type="submit">Submit Reply</button>
-                            </form>
-                        </div>
-
-                        <!-- Display Replies -->
-                        {% for reply in comment.replies %}
-                            <div class="media mt-3">
-                                <img class="avatar avatar-lg mr-4" src="{{ reply.user.avatar_url }}" alt="{{ reply.user.name }}">
-                                <div class="media-body">
-                                    <h6>{{ reply.user.name }}</h6>
-                                    <p class="text-uppercase text-sm text-muted"><i class="far fa-clock"></i> {{ reply.created_at|date:"F j, Y, g:i a" }}</p>
-                                    <p class="text-muted">{{ reply.text }}</p>
-                                </div>
-                            </div>
+                    <!-- Tags -->
+                    <p class="mb-1">
+                        {% for tag in article_obj.tags.all %}
+                        <span class="badge badge-info">{{ tag.name }}</span>
                         {% endfor %}
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-        <!-- /Comments Section -->
+                    </p>
 
-        <!-- Comment Form -->
-        <div class="mb-5">
-            <button class="btn btn-outline-primary" type="button" data-toggle="collapse" data-target="#leaveComment" aria-expanded="false" aria-controls="leaveComment">Leave a comment</button>
-            <div class="mt-4 collapse" id="leaveComment">
-                <h5 class="mb-4">Leave a comment</h5>
-                <form class="form" method="post" action="{% url 'post_comment' blog_obj.id %}">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6">                           
-                            <div class="form-group">
-                                <label class="form-label" for="name">Name <span class="required">*</span></label>
-                                <input class="form-control" id="name" type="text" name="name" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">                                              
-                            <div class="form-group">
-                                <label class="form-label" for="email">Email <span class="required">*</span></label>
-                                <input class="form-control" id="email" type="email" name="email" required>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group mb-4">
-                        <label class="form-label" for="comment">Comment <span class="required">*</span></label>
-                        <textarea class="form-control" id="comment" rows="4" name="comment_text" required></textarea>
-                    </div>
-                    <button class="btn btn-primary" type="submit"><i class="far fa-comment"></i> Comment</button>
-                </form>
+                    <!-- Date Published -->
+                    <p>{{ article_obj.created_at|date:"D, d M Y" }}</p>
+                </div>
             </div>
         </div>
-        <!-- /Comment Form -->
-
     </div>
 </section>
+
+<!-- Blog Content Section -->
+<section class="container">
+    <div class="container">
+        <!-- Blog Content Section -->
+        <div class="row">
+            <!-- Main Content Column -->
+            <div class="col-xl-8 col-lg-8">
+                <!-- Blog Text Content -->
+                <div class="text-content mb-5">
+                    <h1 class="mb-3">{{ article_obj.title }}</h1>
+                    <p>By <strong>{{ article_obj.author }}</strong> | {{ article_obj.created_at|date:"D, d M Y" }}</p>
+                    <p><strong>Category:</strong> {{ article_obj.category }}</p>
+
+                    <!-- Tags Display -->
+                    <p>
+                        <strong>Tags: </strong>
+                        {% for tag in article_obj.tags.all %}
+                        <span class="badge badge-info">{{ tag.name }}</span>
+                        {% endfor %}
+                    </p>
+                    <!-- Article Content -->
+                    <div class="mb-4">
+                        {{ article_obj.content|safe }}
+                    </div>
+                </div>
+
+                <!-- Comments Section -->
+                <div class="comments-section">
+                    <h2 class="h5 mb-4">Comments</h2>
+                    {% for comment in article_obj.comments.all %}
+                    <div class="comment mb-4">
+                        <!-- Comment Author and Metadata -->
+                        <div class="d-flex align-items-center mb-2">
+                            <img class="img-fluid rounded-circle shadow border border-white"
+                                src="{% if comment.author.avatar %}{{ comment.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
+                                alt="{{ comment.author.name }}" style="width: 40px; height: 40px;">
+                            <div class="ml-3">
+                                <strong>{{ comment.author.name }}</strong>
+                                <p class="mb-0">{{ comment.created_at|date:"D, d M Y H:i" }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Comment Content -->
+                        <p>{{ comment.content }}</p>
+
+                        <!-- Reply Link Toggle -->
+                        <a href="#reply-form-{{ comment.id }}" class="reply-link" data-toggle="collapse"
+                            data-target="#reply-form-{{ comment.id }}" aria-expanded="false"
+                            aria-controls="reply-form-{{ comment.id }}">
+                            Reply
+                        </a>
+
+                        <!-- Reply Form Accordion -->
+                        <div id="reply-form-{{ comment.id }}" class="collapse mt-3">
+                            <div class="card card-body">
+                                {% include 'reply.html' with comment=comment %}
+                            </div>
+                        </div>
+
+                        <!-- Replies Section -->
+                        <div class="replies ml-5 mt-3">
+                            {% for reply in comment.replies.all %}
+                            <div class="reply mb-3">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img class="img-fluid rounded-circle shadow border border-white"
+                                        src="{% if reply.author.avatar %}{{ reply.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
+                                        alt="{{ reply.author.name }}" style="width: 30px; height: 30px;">
+                                    <div class="ml-3">
+                                        <strong>{{ reply.author.name }}</strong>
+                                        <p class="mb-0">{{ reply.created_at|date:"D, d M Y H:i" }}</p>
+                                    </div>
+                                </div>
+                                <p>{{ reply.content }}</p>
+
+                                <!-- Nested Reply Link (if needed) -->
+                                <a href="#reply-form-{{ reply.id }}" class="reply-link">Reply</a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+
+                <!-- Add Comment Form -->
+                <div class="add-comment-form mt-5">
+                    <h2 class="h5 mb-4">Add Comment</h2>
+                    <form action="{% url 'comment' article_obj.slug %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group mb-4">
+                            <label for="commentText">Comment</label>
+                            <textarea class="form-control" id="commentText" name="content" rows="2"
+                                placeholder="Add a comment..." required></textarea>
+                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+            <!-- Sidebar Column -->
+            <aside class="col-xl-4 col-lg-4">
+                <div class="sidebar">
+                    <!-- Categories List -->
+                    <div class="mb-4">
+                        <h2 class="h5">Categories</h2>
+                        <ul class="list-unstyled">
+                            {% for cat in all_categories %}
+                            <li><a href="{% url 'category' cat %}">{{ cat }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Tags List -->
+                    <div>
+                        <h2 class="h5">Tags</h2>
+                        <ul class="list-unstyled">
+                            {% for tag in all_tags %}
+                            <li><a href="{% url 'tag' tag.name %}">{{ tag.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block related_posts %}
+{% include 'related_posts.html' %}
+{% endblock %}
+
+{% block categories_tags %}
+{% include 'categories_tags.html' %}
+{% endblock %}
+
+{% block pagination %}
+{% include 'pagination.html' %}
 {% endblock %}
