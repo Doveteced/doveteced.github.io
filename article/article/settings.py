@@ -27,7 +27,7 @@ KEY = 'django-insecure-' + secrets.token_urlsafe(50)
 
 SECRET_KEY = KEY  or os.getenv('SECRET_KEY', KEY)
 
-print(SECRET_KEY)
+# print(SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
