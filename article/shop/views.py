@@ -7,19 +7,30 @@ from django.http import JsonResponse
 from .models import Category, Order, Payment, Product
 from .forms import OrderForm
 
+
+# Product Views
 def product_list(request):
-    # Fetch all products
+    """Fetch and display all products."""
     products = Product.objects.all()
+    print(f"Number of products fetched: {products.count()}")
     return render(request, 'shop/products.html', {'products': products})
 
-# Cart views
+
+def product_list_by_category(request, category_id=None):
+    """Fetch and display products by category."""
+    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
+    return render(request, 'shop/product_list.html', {'products': products})
+
+
+# Cart Views
 def cart_view(request):
+    """Display items in the shopping cart."""
     cart = request.session.get('cart', {})
     cart_items = []
     total_price = 0
 
     for product_id, quantity in cart.items():
-        product = Product.objects.get(id=product_id)
+        product = get_object_or_404(Product, id=product_id)
         cart_items.append({'product': product, 'quantity': quantity})
         total_price += product.price * quantity
 
@@ -29,13 +40,17 @@ def cart_view(request):
     }
     return render(request, 'shop/cart.html', context)
 
+
 def add_to_cart(request, product_id):
+    """Add a product to the cart."""
     cart = request.session.get('cart', {})
     cart[product_id] = cart.get(product_id, 0) + 1
     request.session['cart'] = cart
     return redirect('cart_view')
 
+
 def update_cart(request, product_id):
+    """Update the quantity of a product in the cart."""
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
         cart = request.session.get('cart', {})
@@ -46,81 +61,49 @@ def update_cart(request, product_id):
         request.session['cart'] = cart
     return redirect('cart_view')
 
+
 def remove_from_cart(request, product_id):
+    """Remove a product from the cart."""
     cart = request.session.get('cart', {})
     cart.pop(product_id, None)
     request.session['cart'] = cart
     return redirect('cart_view')
 
+
+# Category Views
 def category_list(request):
-    # Fetch all categories
+    """Fetch and display all categories."""
     categories = Category.objects.all()
     return render(request, 'shop/categories.html', {'categories': categories})
 
+
+# Order Views
 def order_create(request, product_id):
+    """Create a new order for a specific product."""
     product = get_object_or_404(Product, id=product_id)
-    
+
     if request.method == 'POST':
         form = OrderForm(request.POST)
         if form.is_valid():
             order = form.save(commit=False)
             order.product = product
             order.save()
-            return redirect('order_success')  # redirect to a success page
+            return redirect('order_success', order_id=order.id)  # Redirect to the order success page
     else:
         form = OrderForm()
-    
+
     return render(request, 'shop/order_create.html', {'form': form, 'product': product})
-    
+
+
 def order_success(request, order_id):
+    """Display a success message after order creation."""
     order = get_object_or_404(Order, id=order_id)
-
-    context = {
-        'order': order,
-    }
-    
-    return render(request, 'shop/order_success.html', context)
-
-def get_mpesa_access_token():
-    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-    response = requests.get(api_url, auth=(settings.MPESA_CONSUMER_KEY, settings.MPESA_CONSUMER_SECRET))
-    return response.json()['access_token']
-
-def get_paypal_access_token():
-    api_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    headers = {
-        "Accept": "application/json",
-        "Accept-Language": "en_US"
-    }
-    response = requests.post(api_url, headers=headers, auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET), data={"grant_type": "client_credentials"})
-    return response.json()['access_token']
+    return render(request, 'shop/order_success.html', {'order': order})
 
 
-def category_list(request):
-    categories = Category.objects.all()
-    return render(request, 'shop/category_list.html', {'categories': categories})
-
-def product_list(request, category_id=None):
-    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
-    return render(request, 'shop/product_list.html', {'products': products})
-
-def order_create(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    
-    if request.method == 'POST':
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.product = product
-            order.save()
-            return redirect('order_success')  # redirect to a success page
-    else:
-        form = OrderForm()
-    
-    return render(request, 'shop/order_create.html', {'form': form, 'product': product})
-
-
+# Payment Views
 def process_payment(request, order_id):
+    """Process payment for a specific order."""
     order = get_object_or_404(Order, id=order_id)
 
     if request.method == 'POST':
@@ -128,37 +111,43 @@ def process_payment(request, order_id):
         amount = order.product.price * order.quantity
 
         if payment_method == 'Mpesa':
-            # Call M-Pesa Daraja API
             mpesa_response = process_mpesa_payment(amount, order)
-            if mpesa_response['status'] == 'success':
-                # Save payment details
-                Payment.objects.create(
-                    order=order,
-                    amount=amount,
-                    payment_method='M-Pesa',
-                    transaction_id=mpesa_response['transaction_id'],
-                    is_successful=True
-                )
-                return redirect('order_success', order_id=order.id)
+            return handle_payment_response(mpesa_response, order, amount, 'M-Pesa')
 
         elif payment_method == 'PayPal':
-            # Call PayPal API (handle PayPal payment here)
             paypal_response = process_paypal_payment(amount, order)
-            if paypal_response['status'] == 'success':
-                # Save payment details
-                Payment.objects.create(
-                    order=order,
-                    amount=amount,
-                    payment_method='PayPal',
-                    transaction_id=paypal_response['transaction_id'],
-                    is_successful=True
-                )
-                return redirect('order_success', order_id=order.id)
+            return handle_payment_response(paypal_response, order, amount, 'PayPal')
 
     return render(request, 'shop/payment.html', {'order': order})
 
+
+def handle_payment_response(response, order, amount, payment_method):
+    """Handle the payment response for both M-Pesa and PayPal."""
+    if response.get('status') == 'success':
+        Payment.objects.create(
+            order=order,
+            amount=amount,
+            payment_method=payment_method,
+            transaction_id=response['transaction_id'],
+            is_successful=True
+        )
+        return redirect('order_success', order_id=order.id)
+    else:
+        # Log error details for failed payment
+        print(f"Payment failed: {response.get('message', 'Unknown error')}")
+        return redirect('order_failure', order_id=order.id)  # Redirect to a failure page
+
+
+# M-Pesa Functions
+def get_mpesa_access_token():
+    """Retrieve M-Pesa access token."""
+    api_url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    response = requests.get(api_url, auth=(settings.MPESA_CONSUMER_KEY, settings.MPESA_CONSUMER_SECRET))
+    return response.json().get('access_token')
+
+
 def process_mpesa_payment(amount, order):
-    # Example M-Pesa Daraja API integration
+    """Integrate with M-Pesa Daraja API to process payments."""
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     headers = {
         "Authorization": f"Bearer {get_mpesa_access_token()}",
@@ -174,7 +163,7 @@ def process_mpesa_payment(amount, order):
         "PartyA": settings.MPESA_PHONE_NUMBER,
         "PartyB": settings.MPESA_SHORTCODE,
         "PhoneNumber": settings.MPESA_PHONE_NUMBER,
-        "CallBackURL": "https://example.com/callback",  # Update with your callback URL
+        "CallBackURL": settings.MPESA_CALLBACK_URL,  # Update with your callback URL
         "AccountReference": f"Order {order.id}",
         "TransactionDesc": f"Payment for Order {order.id}"
     }
@@ -182,13 +171,31 @@ def process_mpesa_payment(amount, order):
     response = requests.post(api_url, json=payload, headers=headers)
     return response.json()
 
+
+def get_mpesa_timestamp():
+    """Get the current timestamp formatted for M-Pesa."""
+    from datetime import datetime
+    return datetime.now().strftime('%Y%m%d%H%M%S')
+
+
+# PayPal Functions
+def get_paypal_access_token():
+    """Retrieve PayPal access token."""
+    api_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+    headers = {
+        "Accept": "application/json",
+        "Accept-Language": "en_US"
+    }
+    response = requests.post(api_url, headers=headers, auth=(settings.PAYPAL_CLIENT_ID, settings.PAYPAL_SECRET), data={"grant_type": "client_credentials"})
+    return response.json().get('access_token')
+
+
 def process_paypal_payment(amount, order):
-    # Example PayPal API integration
+    """Integrate with PayPal API to process payments."""
     api_url = "https://api-m.sandbox.paypal.com/v1/payments/payment"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {get_paypal_access_token()}"
-    
     }
 
     payload = {
@@ -204,8 +211,8 @@ def process_paypal_payment(amount, order):
             "description": f"Payment for Order {order.id}"
         }],
         "redirect_urls": {
-            "return": "https://example.com/success",  # Update with your success URL
-            "cancel": "https://example.com/cancel"
+            "return": settings.PAYPAL_SUCCESS_URL,  # Update with your success URL
+            "cancel": settings.PAYPAL_CANCEL_URL
         }
     }
 
@@ -213,69 +220,50 @@ def process_paypal_payment(amount, order):
     return response.json()
 
 
-
-def get_mpesa_timestamp():
-    from datetime import datetime
-    return datetime.now().strftime('%Y%m%d%H%M%S')
-
+# Callbacks
 @csrf_exempt
 def mpesa_callback(request):
+    """Handle M-Pesa callback for payment updates."""
     if request.method == 'POST':
-        # Assuming M-Pesa sends a JSON body
         data = json.loads(request.body)
-        
-        # Extract necessary fields
         transaction_id = data.get('transaction_id')
         status = data.get('status')  # e.g., "Success" or "Failed"
         order_id = data.get('order_id')  # Include this in your callback payload
-        
-        try:
-            order = Order.objects.get(id=order_id)
-            payment = Payment.objects.get(order=order)
 
-            if status == 'Success':
-                payment.is_successful = True
-            else:
-                payment.is_successful = False
+        return update_payment_status(transaction_id, order_id, status)
 
-            payment.transaction_id = transaction_id
-            payment.save()
-
-            return JsonResponse({'message': 'Payment status updated'}, status=200)
-        except Order.DoesNotExist:
-            return JsonResponse({'error': 'Order not found'}, status=404)
-        except Payment.DoesNotExist:
-            return JsonResponse({'error': 'Payment not found'}, status=404)
-    
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 @csrf_exempt
 def paypal_callback(request):
+    """Handle PayPal callback for payment updates."""
     if request.method == 'POST':
         data = json.loads(request.body)
-        
-        # Extract necessary fields
         transaction_id = data.get('id')  # PayPal's transaction ID
         status = data.get('status')  # e.g., "COMPLETED" or "FAILED"
         order_id = data.get('order_id')  # Include this in your callback payload
-        
-        try:
-            order = Order.objects.get(id=order_id)
-            payment = Payment.objects.get(order=order)
 
-            if status == 'COMPLETED':
-                payment.is_successful = True
-            else:
-                payment.is_successful = False
-
-            payment.transaction_id = transaction_id
-            payment.save()
-
-            return JsonResponse({'message': 'Payment status updated'}, status=200)
-        except Order.DoesNotExist:
-            return JsonResponse({'error': 'Order not found'}, status=404)
-        except Payment.DoesNotExist:
-            return JsonResponse({'error': 'Payment not found'}, status=404)
+        return update_payment_status(transaction_id, order_id, status)
 
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+
+def update_payment_status(transaction_id, order_id, status):
+    """Update payment status in the database based on the callback."""
+    try:
+        order = Order.objects.get(id=order_id)
+        payment = Payment.objects.get(order=order)
+
+        payment.is_successful = (status == 'Success' or status == 'COMPLETED')
+        payment.transaction_id = transaction_id
+        payment.save()
+
+        # Here you can handle post-payment logic, e.g., sending confirmation emails.
+
+        return JsonResponse({'status': 'success'})
+
+    except Order.DoesNotExist:
+        return JsonResponse({'error': 'Order not found'}, status=404)
+    except Payment.DoesNotExist:
+        return JsonResponse({'error': 'Payment not found'}, status=404)
