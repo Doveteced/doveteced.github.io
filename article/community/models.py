@@ -1,67 +1,80 @@
+import hashlib
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.text import slugify
+from froala_editor.fields import FroalaField
+from home.models import Article, Tag, Profile, Comment as HomeComment, Reply as HomeReply, Dislike as HomeDislike, Like as HomeLike # Updated community Profile model
+class Profile(Profile):
+    bio = models.TextField(blank=True, null=True)
 
-class Topic(models.Model):
-    title = models.CharField(max_length=200)
-    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return self.user.username
+
+# Updated community Post model inheriting from Article
+class Post(Article):
+    topic = models.ForeignKey(Tag, on_delete=models.CASCADE, related_name='posts')
 
     def __str__(self):
         return self.title
 
-class Post(models.Model):
-    topic = models.ForeignKey(Topic, on_delete=models.CASCADE, related_name='posts')
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.author.username}: {self.content[:50]}'
+    def save(self, *args, **kwargs):
+        """Override save method to generate a unique slug if not present."""
+        if not self.slug:
+            self.slug = self.generate_unique_slug()
+        super().save(*args, **kwargs)
 
     @property
-    def like_count(self):
-        return self.likes.count()
+    def hashed_id(self):
+        """Generate a hashed_id for the post if ID exists."""
+        return hashlib.md5(str(self.id).encode()).hexdigest() if self.id else None
 
-    @property
-    def dislike_count(self):
-        return self.dislikes.count()
+    def generate_unique_slug(self):
+        """Generate a unique slug for the post."""
+        slug = slugify(self.title)
+        unique_slug = slug
+        counter = 1
+        while Post.objects.filter(slug=unique_slug).exists():
+            unique_slug = f"{slug}-{counter}"
+            counter += 1
+        return unique_slug
+# Updated community Comment model inheriting from home Comment model
+class Comment(HomeComment):
+    comment_ptr = models.OneToOneField(HomeComment, on_delete=models.CASCADE, parent_link=True, default=None)
+    pass
 
-class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='community_comments')  # Updated related_name
-    content = models.TextField()
+# Updated community Reply model inheriting from home Reply model
+class Reply(HomeReply):
+    pass
+    
+# Updated community Category model
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='category_images/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+    
+# Updated community Topic model inheriting from home Tag model
+class Topic(Tag):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='topics')
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='topic_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    tags = models.ManyToManyField(Tag, blank=True, related_name='topics')
+    featured = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.author.username}: {self.content[:50]}'
-
-class Reply(models.Model):
-    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name='replies')
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='community_replies')  # Updated related_name
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return f'{self.author.username}: {self.content[:50]}'
-
-class Like(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likes')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
+        return self.name
+    
+# Updated community Like model to inherit from home Like model
+class Like(HomeLike):
     class Meta:
-        unique_together = ('post', 'user')
+        proxy = True  # Use proxy if you don't need to add any new fields
 
-    def __str__(self):
-        return f'{self.user.username} liked {self.post.author.username}\'s post'
-
-class Dislike(models.Model):
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='dislikes')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
+# Updated community Dislike model to inherit from home Dislike model
+class Dislike(HomeDislike):
     class Meta:
-        unique_together = ('post', 'user')
-
-    def __str__(self):
-        return f'{self.user.username} disliked {self.post.author.username}\'s post'
+        proxy = True  # Use proxy if you don't need to add any new fields
