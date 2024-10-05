@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 import os
 import secrets
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,11 +49,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'froala_editor',
+    'django_countries',
+    'django_extensions',
+    'adverts',
     'dotenv',
     'home',
     'rest_framework',
     'shop',
     'community',
+
 ]
 
 MIDDLEWARE = [
@@ -63,6 +71,14 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware'
 ]
 
+# Use database-backed sessions
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Default backend
+SESSION_COOKIE_NAME = 'sessionid'  # Default cookie name
+SESSION_COOKIE_AGE = 1209600  # Default session age: 2 weeks (in seconds)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Remember session across browser restarts
+SESSION_COOKIE_SECURE = False  # Use secure cookies for HTTPS connection
+SESSION_COOKIE_HTTPONLY = True  # Prevent client-side access to cookies
+SESSION_COOKIE_SAMESITE = 'Lax'  # Set SameSite flag to prevent CSRF
 ROOT_URLCONF = 'article.urls'
 
 
@@ -165,4 +181,11 @@ EMAIL_HOST = os.getenv('EMAIL_HOST')
 EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
 EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'gsas yitn gogq pppi')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+
+# Authentication Endpoints and redirect URLs
+LOGIN_URL = os.getenv('LOGIN_URL')
+LOGIN_REDIRECT_URL = os.getenv('LOGIN_REDIRECT_URL')
+LOGOUT_REDIRECT_URL = os.getenv('LOGOUT_REDIRECT_URL')
+
