@@ -1,60 +1,123 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Search Results for "{{ query }}"{% endblock %}
+
+{% block content %}
+{% block start %}
 <section class="section">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-10 mb-4">
-          <h1 class="h2 mb-4">Search results for 
-            <mark>{{ query }}</mark>
-          </h1>
-        </div>
-        <div class="col-lg-10">
-          {% if articles %}
-            {% for article in articles %}
-              <article class="card mb-4">
-                <div class="row card-body">
-                  <div class="col-md-4 mb-4 mb-md-0">
-                    <img src="{{ article.image.url }}" class="card-img" alt="post-thumb" style="height: 200px; object-fit: cover; width: 460px;">
-                  </div>
-                  <div class="col-md-8">
-                    <h3 class="h4 mb-3">
-                      <a class="post-title" href="{% url 'post_detail' article.id %}">{{ article.title }}</a>
-                    </h3>
-                    <ul class="card-meta list-inline">
-                      <li class="list-inline-item">
-                        <a href="{% url 'author_detail' article.author.id %}" class="card-meta-author">
-                          <img src="{{ article.author.profile_picture.url }}" alt="{{ article.author.name }}">
-                          <span>{{ article.author.name }}</span>
-                        </a>
-                      </li>
-                      <li class="list-inline-item">
-                        <i class="ti-timer"></i>{{ article.read_time }} Min To Read
-                      </li>
-                      <li class="list-inline-item">
-                        <i class="ti-calendar"></i>{{ article.date|date:"d M, Y" }}
-                      </li>
-                      <li class="list-inline-item">
-                        <ul class="card-meta-tag list-inline">
-                          {% for tag in article.tags.all %}
-                            <li class="list-inline-item">
-                              <a href="{% url 'tag_detail' tag.slug %}">{{ tag.name }}</a>
-                            </li>
-                          {% endfor %}
-                        </ul>
-                      </li>
-                    </ul>
-                    <p>{{ article.summary }}</p>
-                    <a href="{% url 'post_detail' article.id %}" class="btn btn-outline-primary">Read More</a>
-                  </div>
-                </div>
-              </article>
-            {% endfor %}
-          {% else %}
-            <div class="col-lg-10 text-center">
-              <img class="mb-5" src="images/no-search-found.svg" alt="No Search Found">
-              <h3>No Search Found</h3>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 mb-4">
+        <h1 class="h2 mb-4">Search results for <mark>{{ query }}</mark></h1>
+      </div>
+      <div class="col-lg-10">
+        {% if articles %}
+        <!-- Display search results -->
+        {% for article in articles %}
+        <article class="card mb-4">
+          <div class="row card-body">
+            <div class="col-md-4 mb-4 mb-md-0">
+              <img src="{{ article.image.url }}" class="card-img" alt="{{ article.title }}"
+                style="height: 200px; object-fit: cover; width: 460px;">
             </div>
-          {% endif %}
+            <div class="col-md-8">
+              <h3 class="h4 mb-3">
+                <a class="post-title" href="{% url 'post_detail' article.slug %}">{{ article.title }}</a>
+              </h3>
+              <ul class="card-meta list-inline">
+                <li class="list-inline-item">
+                  <a href="{% url 'author_detail' article.author.id %}" class="card-meta-author">
+                    <img src="{{ article.author.profile_picture.url }}" alt="{{ article.author.name }}"
+                      class="rounded-circle">
+                    <span>{{ article.author.name }}</span>
+                  </a>
+                </li>
+                <li class="list-inline-item">
+                  <i class="ti-timer"></i>{{ article.read_time }} Min To Read
+                </li>
+                <li class="list-inline-item">
+                  <i class="ti-calendar"></i>{{ article.date|date:"d M, Y" }}
+                </li>
+                <li class="list-inline-item">
+                  <ul class="card-meta-tag list-inline">
+                    {% for tag in article.tags.all %}
+                    <li class="list-inline-item">
+                      {% if tag.slug %}
+                      <a href="{% url 'tag_detail' tag.slug %}">{{ tag.name }}</a>
+                      {% else %}
+                      {{ tag.name }} <!-- Display the tag name without a link -->
+                      {% endif %}
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </li>
+              </ul>
+              <p>{{ article.summary }}</p>
+              <a href="{% url 'post_detail' article.slug %}" class="btn btn-outline-primary">Read More</a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+
+        <!-- Pagination -->
+        <div class="pagination">
+          <nav aria-label="Search results pagination">
+            <ul class="pagination justify-content-center">
+              {% if articles.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?query={{ query }}&page={{ articles.previous_page_number }}"
+                  aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-disabled="true">&laquo;</span>
+              </li>
+              {% endif %}
+
+              {% for num in articles.paginator.page_range %}
+              {% if articles.number == num %}
+              <li class="page-item active"><a class="page-link">{{ num }}</a></li>
+              {% elif num > articles.number|add:-3 and num < articles.number|add:3 %}
+              <li class="page-item"><a class="page-link" href="?query={{ query }}&page={{ num }}">{{ num }}</a></li>
+              {% endif %}
+              {% endfor %}
+
+              {% if articles.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?query={{ query }}&page={{ articles.next_page_number }}" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {% else %}
+              <li class="page-item disabled">
+                <span class="page-link" aria-disabled="true">&raquo;</span>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
         </div>
+
+        {% else %}
+        <!-- No search results found -->
+        <h2 class="h5">No search results found for <mark>{{ query }}</mark></h2>
+        <div class="col-lg-10 text-center">
+          <img class="mb-5" src="{% static 'img/not_found.svg' %}" alt="No Search Found">
+          <p>Retry with another keyword.</p>
+          <!-- Search Form -->
+          <form class="search-form" action="{% url 'search' %}" method="GET">
+            <div class="input-group">
+              <input type="text" class="form-control" name="query" placeholder="Search" value="{{ query }}" required>
+              <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+          </form>
+        </div>
+        {% endif %}
       </div>
     </div>
-  </section>
-  
+  </div>
+</section>
+{% endblock %}
+{% endblock %}
