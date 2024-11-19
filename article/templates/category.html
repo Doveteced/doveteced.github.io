@@ -1,0 +1,33 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3">
+            <h2>Categories</h2>
+            <ul class="list-unstyled">
+                {% for cat in all_categories %}
+                    <li><a href="{% url 'category' cat %}">{{ cat }}</a></li>
+                {% endfor %}
+            </ul>
+
+            <h2>Topics</h2>
+            <ul class="list-unstyled">
+                {% for topic in all_topics %}
+                    <li><a href="{% url 'topic' topic.name %}">{{ topic.name }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-lg-9">
+            <h1>Articles in Category: {{ category }}</h1>
+            <div class="article-list">
+                {% for article in articles %}
+                    <div class="article">
+                        <h2><a href="{% url 'article_detail' article.slug %}">{{ article.title }}</a></h2>
+                        <p>{{ article.content|truncatewords:50 }}</p>
+                        <p>Category: <a href="{% url 'category' article.category %}">{{ article.category }}</a></p>
+                    </div>
+                {% empty %}
+                    <p>No articles found in this category.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

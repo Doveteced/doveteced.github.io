@@ -139,3 +139,10 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+<<<<<<< HEAD
+=======
+
+# Theme specific
+*/theme/
+article/public/static/*
+>>>>>>> a8d18b23b80ec99c1d3244ee281b19dc054e7ea5
