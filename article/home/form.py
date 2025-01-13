@@ -1,14 +1,5 @@
 from django import forms
 from froala_editor.widgets import FroalaEditor
-<<<<<<< HEAD
-from .models import *
-
-
-class BlogForm(forms.ModelForm):
-    class Meta:
-        model = BlogModel
-        fields = ['title', 'content']
-=======
 from .models import Article, Profile, Tag
 
 class BlogForm(forms.ModelForm):
@@ -122,4 +113,3 @@ class SearchForm(forms.Form):
         return query
     
     
->>>>>>> a8d18b23b80ec99c1d3244ee281b19dc054e7ea5
