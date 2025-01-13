@@ -1,12 +1,4 @@
 from django.contrib import admin
-<<<<<<< HEAD
-
-# Register your models here.
-from .models import BlogModel, Profile
-
-admin.site.register(BlogModel)
-admin.site.register(Profile)
-=======
 from .models import Article, Profile, Reply, Tag, Comment
 
 # Register the Article model
@@ -31,4 +23,3 @@ class CommentAdmin(admin.ModelAdmin):
 @admin.register(Reply)
 class ReplyAdmin(admin.ModelAdmin):
     list_display = [field.name for field in Reply._meta.fields]
->>>>>>> a8d18b23b80ec99c1d3244ee281b19dc054e7ea5
