@@ -1,9 +1,6 @@
 from django.urls import path
-<<<<<<< HEAD
-=======
 
 from home.helpers import set_language
->>>>>>> a8d18b23b80ec99c1d3244ee281b19dc054e7ea5
 from .views import *
 
 urlpatterns = [
@@ -12,13 +9,6 @@ urlpatterns = [
     path('register/', register_view, name="register_view"),
     path('add-blog/', add_blog, name="add_blog"),
     path('blog-detail/<slug>', blog_detail, name="blog_detail"),
-<<<<<<< HEAD
-    path('see-blog/', see_blog, name="see_blog"),
-    path('blog-delete/<id>', blog_delete, name="blog_delete"),
-    path('blog-update/<slug>/', blog_update, name="blog_update"),
-    path('logout-view/', logout_view, name="logout_view"),
-    path('verify/<token>/', verify, name="verify")
-=======
     path('blogs/', see_blog, name="see_blog"),
     path('blog-delete/<id>', blog_delete, name="blog_delete"),
     path('blog-update/<slug>/', blog_update, name="blog_update"),
@@ -68,5 +58,4 @@ urlpatterns = [
     path('help/faq/', faq, name='faq'),
     path('help/contact/', contact_us, name='contact'),
 
->>>>>>> a8d18b23b80ec99c1d3244ee281b19dc054e7ea5
 ]
