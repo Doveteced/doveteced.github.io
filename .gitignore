@@ -1,2 +1,41 @@
-article/public/static/*
-article/data.json
+# Python
+*.py[cod]
+__pycache__/
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Django
+*.sqlite3
+*.pyo
+*.pyd
+*.pdb
+*.pot
+*.mo
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pot
+*.mo
+
+# Environment variables
+.env
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+media
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# macOS
+.DS_Store
