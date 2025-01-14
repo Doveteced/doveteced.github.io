@@ -41,10 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',  # 'app' app
     'home',  # 'home' app
+    'rest_framework',  # Django REST framework
+    'django_extensions',  # Django extensions
     'froala_editor',
     'shop',
     'adverts',
     'community',
+    
 ]
 
 MIDDLEWARE = [
@@ -83,17 +86,23 @@ WSGI_APPLICATION = 'dovetecenterprises.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'techdarasa',
-        'USER': 'postgres',
-        'PASSWORD': 'pa55word',
-        'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+if os.environ.get('PRODUCTION_ENV') == 'True':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'techdarasa',
+            'USER': 'postgres',
+            'PASSWORD': 'pa55word',
+            'HOST': 'localhost',  # Or an IP Address that your DB is hosted on
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation
@@ -121,7 +130,7 @@ AUTH_USER_MODEL = 'home.User'
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'GMT'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -131,7 +140,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/dovetecenterprises/static-files/
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
