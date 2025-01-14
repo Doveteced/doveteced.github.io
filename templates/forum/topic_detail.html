@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ topic.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ topic.title }}</h1>
+<a href="{% url 'post_create' topic.id %}" class="btn btn-primary">Add Post</a>
+<hr>
+
+<div class="list-group">
+    {% for post in posts %}
+        <div class="list-group-item">
+            <h5 class="mb-1">{{ post.author.username }} - {{ post.created_at }}</h5>
+            <p>{{ post.content }}</p>
+            <a href="{% url 'post_detail' post.id %}" class="btn btn-link">View Comments</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
