@@ -32,7 +32,6 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -40,14 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app', # 'app' app
-    'blog',  # 'blog' app
-    'ckeditor', # 'ckeditor' app
-    'ckeditor_uploader', # 'ckeditor_uploader' app
-    # 'tinymce', # 'tinymce' app
-    # 'crispy_forms', # 'crispy_forms' app
-    # 'storages', # 'storages' app
-    
+    'app',  # 'app' app
+    'home',  # 'home' app
+    'froala_editor',
+    'shop',
+    'adverts',
+    'community',
 ]
 
 MIDDLEWARE = [
@@ -117,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 # AUTH USER MODEL
-AUTH_USER_MODEL = 'app.User'
+AUTH_USER_MODEL = 'home.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

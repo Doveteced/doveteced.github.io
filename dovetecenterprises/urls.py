@@ -19,16 +19,27 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+
+from home.views import login_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('app.urls')),
-    path('blog/', include('blog.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
-    
+    path('', include('app.urls')),path('' , include('home.urls')),
+    path('' , include('home.urls')), # Include home app URLs
+    path('api/' , include('home.urls_api')), # Include home app URLs
+    path('adverts/', include('adverts.urls')),  # Include adverts app URLs
+    path('accounts/login/', login_view, name='login_view'), # Include adverts app URLs
+    path('froala_editor/',include('froala_editor.urls')), # Include Froala editor URLs
+    path('shop/', include('shop.urls')), # Include shop app URLs
+    path('community/', include('community.urls')), # Include community app URLs
 ]
-if DEBUG:
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
