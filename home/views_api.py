@@ -51,9 +51,6 @@ class LoginView(APIView):
         return Response(response)
 
 
-LoginView = LoginView.as_view()
-
-
 class RegisterView(APIView):
 
     def post(self, request):
@@ -89,6 +86,3 @@ class RegisterView(APIView):
             print(e)
 
         return Response(response)
-
-
-RegisterView = RegisterView.as_view()
