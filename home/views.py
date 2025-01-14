@@ -16,8 +16,7 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
-
-
+from django.contrib.auth.forms import AuthenticationForm
 from community.forms import CommentForm
 from community.models import Post
 from home.form import ArticleForm
@@ -139,11 +138,16 @@ def logout_view(request):
     return redirect('/')
 
 def home(request):
-    context = {'blogs': Article.objects.all()}
+    articles = Article.objects.all()
+    for article in articles:
+        if not article.image:
+            article.image = None  # Set a default value or handle the missing image case
+    context = {'blogs': articles}
     return render(request, 'index.html', context)
 
 def login_view(request):
-    return render(request, 'login.html')
+    form = AuthenticationForm()
+    return render(request, 'app/login.html', {'form': form})
 
 def blog_detail(request, slug):
     context = {}
@@ -266,15 +270,17 @@ def see_blog(request):
         # Fetch all categories and tags for the sidebar
         all_categories = Article.objects.values_list('category', flat=True).distinct()
         all_tags = Tag.objects.all()
+        author = request.user()
         context['all_categories'] = all_categories
         context['all_tags'] = all_tags
+        context['author'] = author
 
     except Exception as e:
         # Log the error for debugging purposes
         print(f"Error fetching blog articles: {e}")
         context['error'] = "An error occurred while fetching your blog articles. Please try again later."
 
-    return render(request, 'see_blog.html', context)
+    return render(request, 'blog_detail.html', context)
 
 def add_blog(request):
     context = {'form': ArticleForm()}
@@ -550,26 +556,27 @@ def dislike(request, id):
 
 def article_detail(request, post_id):
     article = get_object_or_404(Article, post_id=post_id)
-    comments = article.comments.all()
-    return render(request, 'article_detail.html', {'article': article, 'comments': comments})
+    comments = article.comments.all(article=article)
+    replies = Reply.objects.filter(comment__article=article)
+    return render(request, 'blog_detail.html', {'article': article, 'comments': comments, 'replies': replies})
 
 # @login_required(login_url='login_view')  # Redirects to 'login_view' if not authenticated
-def add_comment(request, post_id):
+def add_comment(request, slug):
     """
     Handle the addition of a comment to a post.
     This view function processes a POST request to add a comment to a specific post.
-    It retrieves the post and its associated article using the provided post_id.
+    It retrieves the post and its associated article using the provided slug.
     If the request method is POST and the form is valid, it saves the comment,
     associates it with the article and the current user, and redirects to the article detail page
     with a success message. If the form is invalid, it redirects with an error message.
     Args:
         request (HttpRequest): The HTTP request object.
-        post_id (int): The ID of the post to which the comment is being added.
+        slug (str): The slug of the post to which the comment is being added.
     Returns:
         HttpResponse: A redirect to the article detail page.
     """
 
-    post = get_object_or_404(Post, id=post_id)
+    post = get_object_or_404(Post, slug=slug)
     article = get_object_or_404(Article, slug=post.slug)
     if request.method == 'POST':
         form = CommentForm(request.POST)
@@ -583,7 +590,6 @@ def add_comment(request, post_id):
         else:
             messages.error(request, 'There was an error adding your comment.')
     return redirect('article_detail', slug=article.slug)
-
 
 def add_reply(request, comment_id):
     """
