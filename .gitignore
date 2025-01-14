@@ -144,3 +144,5 @@ cython_debug/
 */theme/
 article/public/static/*
 media/*
+*.pyc
+dovetecenterprises/__pycache__/settings.cpython-313.pyc
