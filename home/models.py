@@ -1,9 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from froala_editor.fields import FroalaField
 from django.utils import timezone
 from django.utils.text import slugify
 import hashlib
+
+from dovetecenterprises import settings
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -19,19 +22,36 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
         return self.create_user(email, password, **extra_fields)
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-
+    is_superuser = models.BooleanField(default=False)
+    username = models.CharField(max_length=30, blank=True, null=True)
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
+    
+    def save(self, *args, **kwargs):
+        if not self.username:
+            self.username = self.email.split('@')[0]
+        super().save(*args, **kwargs)
+
+    @property
+    def display_name(self):
+        if self.username:
+            return self.username
+        return f"{self.first_name} {self.last_name}"
 
     def __str__(self):
         return self.email
@@ -40,7 +60,7 @@ class Profile(models.Model):
     """
     Profile model extends the built-in User model with additional fields.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     is_verified = models.BooleanField(default=False)
     token = models.CharField(max_length=100, null=True, blank=True)
     otp = models.CharField(max_length=6, null=True, blank=True)
@@ -65,7 +85,7 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.user.username
+        return self.user.email
 
 class Tag(models.Model):
     """
@@ -79,6 +99,30 @@ class Tag(models.Model):
 class Article(models.Model):
     """
     Article model with fields for SEO and content editing using Froala.
+    
+    Args:
+        id (AutoField): Unique identifier for the article.
+        title (CharField): Title of the article.
+        content (FroalaField): Content of the article.
+        seo_description (TextField): Description for SEO purposes.
+        slug (SlugField): Unique slug for the article.
+        user (ForeignKey): Reference to the User who created the article.
+        image (ImageField): Featured image for the article.
+        created_at (DateTimeField): Timestamp when the article was created.
+        updated_at (DateTimeField): Timestamp when the article was last updated.
+        category (CharField): Category of the article.
+        tags (ManyToManyField): Tags associated with the article.
+        likes (PositiveIntegerField): Number of likes for the article.
+        dislikes (PositiveIntegerField): Number of dislikes for the article.
+        views (PositiveIntegerField): Number of views for the article.
+        author (ForeignKey): Reference to the Profile who created the article.
+        featured (BooleanField): Indicates if the article is featured.
+        
+    Methods:
+        __str__(): Returns a string representation of the article.
+        save(*args, **kwargs): Overrides the save method to generate a unique slug if not present.
+        hashed_id(): Generates a hashed_id for the article if ID exists.
+        generate_unique_slug(): Generates a unique slug for the
     """
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=1000, unique=True)
