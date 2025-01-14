@@ -73,7 +73,6 @@
           <form method="post" class="form-block form-login form-overlap">
             {% csrf_token %}
             <h2 class="mb-4">Login</h2>
-            <p>No account yet? <a href="{% url 'register_view' %}">sign up</a></p>
             <div class="form-group">
               <label for="id_username">Email</label>
               {{ form.username }}
@@ -82,7 +81,8 @@
               <label for="id_password">Password</label>
               {{ form.password }}
             </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <button type="submit" class="btn btn-primary btn-block mb-3">Login</button>
+            <p class="mb-1">No account yet? <a href="{% url 'register_view' %}">sign up</a></p>
           </form>
         </div>
       </div>
