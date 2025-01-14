@@ -1,188 +1,180 @@
-{% extends "base.html" %}
+<!--
+  Dovetec Enterprises
+-->
+{% load static %}
+{% include 'includes/head.html' %}
 
-{% block start %}
-<style>
-    .bg-image {
-        position: relative;
-        z-index: 1;
-    }
+<body>
+  
+  <!-- Nav Container -->
+  {% include 'includes/navbar.html' %}
+  <!-- END container -->
 
-    .article-content {
-        position: relative;
-        z-index: 2;
-        margin-top: -50px;
-        /* Adjust as necessary */
-    }
-</style>
-<!-- Blog Header/Banner Section -->
-<section class="vw-100">
-    <div class="container-fluid article-content pt-5 h-100">
-        <div class="bg-image text-center shadow rounded mb-5 h-100"
-            style="background-image: url('/media/{{ article_obj.image }}');">
-            <div class="d-flex justify-content-center align-items-center h-100 text-white">
-                <div>
-                    <h2 class="display-4">{{ article_obj.title }}</h2>
-                    <!-- Article Author Image -->
-                    <div class="container-fluid mb-2">
-                        <img class="img-fluid rounded-circle shadow border border-white"
-                            src="{% if article_obj.author.avatar %}{{ article_obj.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
-                            alt="{{ article_obj.author.name }}" style="width: 50px; height: 50px;">
-                    </div>
-                    <p class="mb-1">By {{ article_obj.author }}</p>
-                    <p class="mb-1">{{ article_obj.category }}</p>
+  <div class="hero overlay pt-0" data-stellar-background-ratio="0.5" style="background-image: url(&quot;/static/images/hero_bg.png&quot;); background-position: 0% 39px;">
 
-                    <!-- Tags -->
-                    <p class="mb-1">
-                        {% for tag in article_obj.tags.all %}
-                        <span class="badge badge-info">{{ tag.name }}</span>
-                        {% endfor %}
-                    </p>
-
-                    <!-- Date Published -->
-                    <p>{{ article_obj.created_at|date:"D, d M Y" }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Blog Content Section -->
-<section class="container">
     <div class="container">
-        <!-- Blog Content Section -->
-        <div class="row">
-            <!-- Main Content Column -->
-            <div class="col-xl-8 col-lg-8">
-                <!-- Blog Text Content -->
-                <div class="text-content mb-5">
-                    <h1 class="mb-3">{{ article_obj.title }}</h1>
-                    <p>By <strong>{{ article_obj.author }}</strong> | {{ article_obj.created_at|date:"D, d M Y" }}</p>
-                    <p><strong>Category:</strong> {{ article_obj.category }}</p>
-
-                    <!-- Tags Display -->
-                    <p>
-                        <strong>Tags: </strong>
-                        {% for tag in article_obj.tags.all %}
-                        <span class="badge badge-info">{{ tag.name }}</span>
-                        {% endfor %}
+      <div class="row align-items-center justify-content-between">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+              <div class="col-lg-12">
+                <div class="row align-items-center">
+                  <div class="col-lg-7 intro mx-auto text-center">
+                    <p class="text-white mb-4 mt-3 aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                        {{ article_obj.user.first_name }} {{ article_obj.user.last_name }}
+                        <span class="mx-3">•</span> {{ article_obj.created_at|date:"D, d M Y" }}
                     </p>
-                    <!-- Article Content -->
-                    <div class="mb-4">
-                        {{ article_obj.content|safe }}
-                    </div>
+                    <h1 data-aos="fade-up" data-aos-delay="0" class="aos-init aos-animate">{{ article_obj.title|safe }}</h1>
+                  </div>
                 </div>
-
-                <!-- Comments Section -->
-                <div class="comments-section">
-                    <h2 class="h5 mb-4">Comments</h2>
-                    {% for comment in article_obj.comments.all %}
-                    <div class="comment mb-4">
-                        <!-- Comment Author and Metadata -->
-                        <div class="d-flex align-items-center mb-2">
-                            <img class="img-fluid rounded-circle shadow border border-white"
-                                src="{% if comment.author.avatar %}{{ comment.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
-                                alt="{{ comment.author.name }}" style="width: 40px; height: 40px;">
-                            <div class="ml-3">
-                                <strong>{{ comment.author.name }}</strong>
-                                <p class="mb-0">{{ comment.created_at|date:"D, d M Y H:i" }}</p>
-                            </div>
-                        </div>
-
-                        <!-- Comment Content -->
-                        <p>{{ comment.content }}</p>
-
-                        <!-- Reply Link Toggle -->
-                        <a href="#reply-form-{{ comment.id }}" class="reply-link" data-toggle="collapse"
-                            data-target="#reply-form-{{ comment.id }}" aria-expanded="false"
-                            aria-controls="reply-form-{{ comment.id }}">
-                            Reply
-                        </a>
-
-                        <!-- Reply Form Accordion -->
-                        <div id="reply-form-{{ comment.id }}" class="collapse mt-3">
-                            <div class="card card-body">
-                                {% include 'reply.html' with comment=comment %}
-                            </div>
-                        </div>
-
-                        <!-- Replies Section -->
-                        <div class="replies ml-5 mt-3">
-                            {% for reply in comment.replies.all %}
-                            <div class="reply mb-3">
-                                <div class="d-flex align-items-center mb-2">
-                                    <img class="img-fluid rounded-circle shadow border border-white"
-                                        src="{% if reply.author.avatar %}{{ reply.author.avatar.url }}{% else %}/media/profile/person_1-min.png{% endif %}"
-                                        alt="{{ reply.author.name }}" style="width: 30px; height: 30px;">
-                                    <div class="ml-3">
-                                        <strong>{{ reply.author.name }}</strong>
-                                        <p class="mb-0">{{ reply.created_at|date:"D, d M Y H:i" }}</p>
-                                    </div>
-                                </div>
-                                <p>{{ reply.content }}</p>
-
-                                <!-- Nested Reply Link (if needed) -->
-                                <a href="#reply-form-{{ reply.id }}" class="reply-link">Reply</a>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-
-
-                <!-- Add Comment Form -->
-                <div class="add-comment-form mt-5">
-                    <h2 class="h5 mb-4">Add Comment</h2>
-                    <form action="{% url 'comment' article_obj.slug %}" method="post">
-                        {% csrf_token %}
-                        <div class="form-group mb-4">
-                            <label for="commentText">Comment</label>
-                            <textarea class="form-control" id="commentText" name="content" rows="2"
-                                placeholder="Add a comment..." required></textarea>
-                            <button type="submit" class="btn btn-primary mt-3">Submit</button>
-                        </div>
-                    </form>
-                </div>
-
+      
+              </div>
             </div>
-
-            <!-- Sidebar Column -->
-            <aside class="col-xl-4 col-lg-4">
-                <div class="sidebar">
-                    <!-- Categories List -->
-                    <div class="mb-4">
-                        <h2 class="h5">Categories</h2>
-                        <ul class="list-unstyled">
-                            {% for cat in all_categories %}
-                            <li><a href="{% url 'category' cat %}">{{ cat }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <!-- Tags List -->
-                    <div>
-                        <h2 class="h5">Tags</h2>
-                        <ul class="list-unstyled">
-                            {% for tag in all_tags %}
-                            <li><a href="{% url 'tag' tag.name %}">{{ tag.name }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </aside>
-        </div>
+          </div>
+      </div>
     </div>
-</section>
-{% endblock %}
+ </div>
+  
+  </div>
 
-{% block related_posts %}
-{% include 'related_posts.html' %}
-{% endblock %}
+  <div class="site-section">
+    <div class="container article">
+      <div class="row justify-content-center align-items-stretch">
 
-{% block categories_tags %}
-{% include 'categories_tags.html' %}
-{% endblock %}
+        <article class="col-lg-8 order-lg-2 px-lg-5">
+          <div class="rich-text-content">
+            {{ article_obj.content|safe }}
+          </div>
 
-{% block pagination %}
-{% include 'pagination.html' %}
-{% endblock %}
+          <div class="pt-5 categories_tags">
+            <p>Categories: 
+                {% for category in article_obj.categories.all %}
+                    <span class="badge badge-pill" style="background-color: {{ category.color }}; color: {{ category.text_color }}">{{ category.name }}</span>
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                Tags: 
+                {% for tag in article_obj.tags.all %}
+                    <span class="badge badge-pill" style="background-color: {{ tag.color }}; color: {{ tag.text_color }};">#{{ tag.name }}</span>
+                    {% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+          </div>
+
+          <div class="post-single-navigation d-flex align-items-stretch">
+            {% if previous_blog %}
+              <a href="{{ previous_blog.get_absolute_url }}" class="mr-auto w-50 pr-4">
+                <span class="d-block">Previous Post</span>
+                {{ previous_blog.title }}
+              </a>
+            {% endif %}
+            {% if next_blog %}
+              <a href="{{ next_blog.get_absolute_url }}" class="ml-auto w-50 text-right pl-4">
+                <span class="d-block">Next Post</span>
+                {{ next_blog.title }}
+              </a>
+            {% endif %}
+          </div>
+
+          <div class="pt-5">
+            <h3 class="mb-5">Join the Discussion</h3>
+            <ul class="comment-list">
+              {% if article_obj.comments.count == 0 %}
+                <li class="comment">
+                  <div class="comment-body"></div>
+                    <p>Be the first to comment on this article!</p>
+                  </div>
+                </li>
+              {% else %}
+                {% for comment in article_obj.comments.all %}
+                  <li class="comment">
+                    <div class="vcard bio">
+                      <img style="min-width: auto; max-width: 40px;" class="rounded-circle" src="{{ comment.user.profile.image.url }}" alt="{{ comment.author.get_full_name }}">
+                    </div>
+                    <div class="comment-body">
+                      <h3>{{ comment.author.get_full_name }}</h3>
+                      <div class="meta">{{ comment.created_at }}</div>
+                      <p>{{ comment.content }}</p>
+                      
+                      {% if comment.replies.all %}
+                        <ul class="comment-replies">
+                          {% for reply in comment.replies.all %}
+                            <li class="comment">
+                              <div class="vcard bio">
+                                <img style="min-width: auto; max-width: 40px;" class="avatar rounded-circle" src="{{ reply.user.profile.image.url }}" alt="{{ reply.user.get_full_name }}">
+                              </div>
+                              <div class="comment-body">
+                                <h3>{{ reply.user.get_full_name }}</h3>
+                                <div class="meta">{{ reply.created_at }}</div>
+                                <p>{{ reply.content }}</p>
+                              </div>
+                            </li>
+                            <p>
+                                <a href="{% url 'add_reply' %}" class="reply">Reply</a>
+                            </p>
+                          {% endfor %}
+                        </ul>
+                      {% endif %}
+                    </div>
+                  </li>
+                {% endfor %}
+              {% endif %}</li>
+            </ul>
+
+            <div class="comment-form-wrap pt-2 col-md-12">
+              <h3 class="mb-5">Leave a Comment</h3>
+              <form action="add_comment" method="post" class="d-flex flex-wrap">
+                {% csrf_token %}
+                <div class="form-group col-md-12 pt-0 pb-0">
+                  <label for="message">Comment</label>
+                  <textarea name="message" id="message" cols="30" placeholder="Type your comment here..." rows="5" class="form-control"></textarea>
+                </div>
+                <div class="form-group col-md-3 pb-4">
+                  <input type="submit" value="Post Comment" class="btn btn-primary btn-md">
+                </div>
+              </form>
+            </div>
+          </div>
+        </article>
+
+        <div class="col-md-12 col-lg-1 order-lg-1">
+          <div class="share sticky-top">
+            <h3>Share</h3>
+            <ul class="list-unstyled share-article">
+              <li><a href="#"><span class="icon-facebook"></span></a></li>
+              <li><a href="#"><span class="icon-twitter"></span></a></li>
+              <li><a href="#"><span class="icon-pinterest"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3 mb-5 mb-lg-0 order-lg-3">
+
+          <div class="mb-4">
+            <a href="https://youtu.be/KCcrhGTAm6I" data-fancybox class="video-wrap">
+              <span class="play-wrap"><span class="icon-play"></span></span>
+              <img src="{% static 'images/img_h_5-min.jpg' %}" alt="Image" class="img-fluid rounded">
+            </a>
+          </div>
+
+          <div class="share floating-block sticky-top">
+
+            <h2 class="mb-3 text-black">Subscribe to Newsletter</h2>
+            <p>
+              Stay ahead of the Curve: Join Our Exclusive Newsletter!
+              Be the first to access groundbreaking insights, expert tips, and industry trends directly in your inbox.
+              Subscribe now to unlock a world of innovation and stay ahead of your competition!
+            </p>
+            <form action="#">
+              <input type="email" class="form-control mb-2" placeholder="Enter email">
+              <input type="submit" value="Subscribe" class="btn btn-primary btn-block">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  {% include 'includes/footer.html' %}
+  <!-- End Footer -->
+ {% include 'includes/scripts.html' %}
+</body>
+</html>
