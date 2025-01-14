@@ -1,15 +1,18 @@
-from django.urls import path
+from django.urls import include, path
 
+from home import views_api
 from home.helpers import set_language
 from .views import *
 
 urlpatterns = [
     path('', home, name="home"),
+    path('api/auth/register', views_api.RegisterView.as_view(), name='register_api'),
+    path('api/auth/login', views_api.LoginView.as_view(), name='login_api'),
     path('login/', login_view, name="login_view"),
     path('register/', register_view, name="register_view"),
     path('add-blog/', add_blog, name="add_blog"),
     path('blog-detail/<slug>', blog_detail, name="blog_detail"),
-    path('blogs/', see_blog, name="see_blog"),
+    path('articles/', see_blog, name="see_blog"),
     path('blog-delete/<id>', blog_delete, name="blog_delete"),
     path('blog-update/<slug>/', blog_update, name="blog_update"),
     path('featured/', featured_articles, name='featured_articles'),
@@ -29,7 +32,7 @@ urlpatterns = [
     path('tags/', tags, name="tags"),
     path('like/<id>/', like, name="like"),
     path('dislike/<id>/', dislike, name="dislike"),
-    path('comment/<str:post_id>/', add_comment, name="comment"),
+    path('comment/<slug:post_slug>/', add_comment, name="comment"),
     path('reply/<id>/', add_reply, name="reply"),
     path('delete-comment/<id>/', delete_comment, name="delete_comment"),
     path('delete-reply/<id>/', delete_reply, name="delete_reply"),

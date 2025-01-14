@@ -11,6 +11,6 @@ urlpatterns = [
     path('post/<slug:post_slug>/dislike/', toggle_dislike, name='toggle_dislike'),
     path('like/<slug:post_slug>/', toggle_like, name='toggle_like'),
     path('dislike/<slug:post_slug>/', toggle_dislike, name='toggle_dislike'),
-    path('comment/<int:post_id>/', add_comment, name='add_comment'),
-    path('reply/<int:id>/', add_reply, name='add_reply'),
+    path('comment/<slug:post_slug>/', add_comment, name='add_comment'),
+    path('reply/', add_reply, name='add_reply'),
 ]

@@ -26,14 +26,14 @@ from home.views import login_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('app.urls')),path('' , include('home.urls')),
-    path('' , include('home.urls')), # Include home app URLs
-    path('api/' , include('home.urls_api')), # Include home app URLs
+    path('', include(('app.urls'))),  # Include app URLs
+    path('articles/', include('home.urls')),  # Include articles homepage app URLs
+    path('api/', include('home.urls_api')),  # Include home app URLs
     path('adverts/', include('adverts.urls')),  # Include adverts app URLs
-    path('accounts/login/', login_view, name='login_view'), # Include adverts app URLs
-    path('froala_editor/',include('froala_editor.urls')), # Include Froala editor URLs
-    path('shop/', include('shop.urls')), # Include shop app URLs
-    path('community/', include('community.urls')), # Include community app URLs
+    path('accounts/login/', login_view, name='login_view'),  # Include login view
+    path('froala_editor/', include('froala_editor.urls')),  # Include Froala editor URLs
+    path('shop/', include('shop.urls')),  # Include shop app URLs
+    path('community/', include('community.urls')),  # Include community app URLs
 ]
 
 
