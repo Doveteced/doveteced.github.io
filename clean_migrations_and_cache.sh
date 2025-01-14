@@ -29,20 +29,28 @@ if [[ -n "$VIRTUAL_ENV" ]]; then
 fi
 
 # Check and remove env, venv, and .venv directories
-remove_dir_if_exists "env"
-remove_dir_if_exists "venv"
-remove_dir_if_exists ".venv"
+# remove_dir_if_exists "env"
+# remove_dir_if_exists "venv"
+# remove_dir_if_exists ".venv"
 
-echo "Installing virtualenv..."
+echo "Setting up virtualenv..."
 python3 -m venv .venv
+
+# Clean Django cache and Uninstall Django and Reinstall Django
+echo "Cleaning up Django cache..."
+pip uninstall -y Django
+pip install Django
 
 echo "Activating virtualenv..."
 source .venv/bin/activate
 
 echo "Installing requirements..."
-pip install --upgrade pip setuptools --upgrade
-pip install -r requirements.txt
+# pip install --upgrade pip setuptools --upgrade
+pip install --upgrade -r requirements.txt
 
+# echo "Cleaning up migration files (except __init__.py)..."
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
 echo "Migration cleanup and cache cleanup completed."
 
 echo "Running migrations..."
@@ -51,8 +59,8 @@ python manage.py migrate
 
 echo "Migration completed."
 
-# echo "Cleaning up cache..."
-# python manage.py clear_cache
+echo "Cleaning up cache..."
+python manage.py clear_cache
 
 echo "Cache cleanup completed."
 
