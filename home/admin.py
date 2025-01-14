@@ -1,5 +1,31 @@
 from django.contrib import admin
-from .models import Article, Profile, Reply, Tag, Comment
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group
+from .models import Article, Profile, Reply, Tag, Comment, User
+
+class UserAdmin(BaseUserAdmin):
+    list_display = ('email', 'first_name', 'last_name', 'is_staff', 'is_active')
+    list_filter = ('is_staff', 'is_active')
+    fieldsets = (
+        (None, {'fields': ('email', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+    )
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2'),
+        }),
+    )
+    search_fields = ('email', 'first_name', 'last_name')
+    ordering = ('email',)
+    filter_horizontal = ()
+
+# Unregister the Group model from admin as it's not used
+admin.site.unregister(Group)
+
+# Register the custom User model and UserAdmin
+admin.site.register(User, UserAdmin)
 
 # Register the Article model
 admin.site.register(Article)
