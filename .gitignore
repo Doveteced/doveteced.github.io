@@ -146,3 +146,4 @@ article/public/static/*
 media/*
 *.pyc
 dovetecenterprises/__pycache__/settings.cpython-313.pyc
+.vscode/PythonImportHelper-v2-Completion.json
